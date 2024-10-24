@@ -1,9 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <title>Welcome to DNCL Interpreter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNCL Interpreter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+        .header {
+            background-color: black;
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: xx-large;
+        }
+        #execute-btn {
+            margin: 20px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #code-input {
+            width: 80%;
+            height: 300px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .explanatory-text {
+            border-radius: 15px;
+            background-color: #ebebeb;
+            margin-top: 20px;
+            width: 80%;
+            padding: 10px;
+        }
+        #explanatory-content1 {
+            margin-left: 15px;
+            margin-top: 0;
+        }
+        #explanatory-content2 {
+            margin-left: 15px;
+            margin-top: -5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to DNCL Interpreter</h1>
+    <div class="header">
+        <h1>DNCL Interpreter</h1>
+    </div>
+
+    <div class="explanatory-text">
+        <p id="explanatory-content1">最近共通テストで使われているDNCLをブラウザで実行してみましょう!</p>
+        <a href="https://www.dnc.ac.jp/albums/abm.php?d=511&f=abm00003141.pdf&n=6-1_%E6%A6%82%E8%A6%81%E3%80%8C%E6%83%85%E5%A0%B1%E3%80%8D.pdf" id="explanatory-content2">DNCLの文法はこちら</a>
+    </div>
+    
+    <div id="execute_contents">
+        <button id="execute-btn">実行</button>
+    </div>
+    
+    <textarea id="code-input" placeholder="ここにDNCLコードを入力してください..."></textarea>
+
+    <!-- JavaScriptは変更なし -->
 </body>
 </html>
