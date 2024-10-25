@@ -52,6 +52,26 @@
             margin-left: 15px;
             margin-top: -5px;
         }
+        .execute_contents {
+            width: 80%;
+            padding: 0px;
+            display: flex; /* フレックスボックスを使用して横並びに */
+            align-items: center; /* 子要素の高さを揃える */
+        }
+        #execute-btn {
+            width: 25%;
+            margin-left: -11px;
+            height: 49px; /* 親要素の高さに合わせる */
+            padding: 0; /* パディングをリセット */
+        }
+        #result-box {
+            width: 74%;
+            margin-left: 9px;
+            height: 40px; /* 固定の高さを設定 */
+            resize: none; /* テキストエリアのリサイズを無効化 */
+            color: white;
+            background-color: #5d5d5d;
+        }
     </style>
 </head>
 <body>
@@ -64,8 +84,9 @@
         <a href="https://www.dnc.ac.jp/albums/abm.php?d=511&f=abm00003141.pdf&n=6-1_%E6%A6%82%E8%A6%81%E3%80%8C%E6%83%85%E5%A0%B1%E3%80%8D.pdf" id="explanatory-content2">DNCLの文法はこちら</a>
     </div>
     
-    <div id="execute_contents">
+    <div class="execute_contents">
         <button id="execute-btn">実行</button>
+        <textarea id="result-box" placeholder="結果..."></textarea>
     </div>
     
     <textarea id="code-input" placeholder="ここにDNCLコードを入力してください..."></textarea>
