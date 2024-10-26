@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DNCL Interpreter</title>
+    <link rel="stylesheet" href="{% static 'DNCLInterpreter/contract_buttons.css' %}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,13 +32,6 @@
             font-size: 16px;
             cursor: pointer;
         }
-        #code-input {
-            width: 100%;
-            height: 300px;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 14px;
-        }
         .explanatory-text {
             border-radius: 15px;
             background-color: #ebebeb;
@@ -60,7 +55,15 @@
         #execute-btn {
             width: 25%;
             height: 49px; /* 親要素の高さに合わせる */
-            padding: 0; /* パディングをリセット */
+            border-width: 0px;
+        }
+        #code-input {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: none;
         }
         #result-box {
             width: 74%;
@@ -72,6 +75,18 @@
             border-color: #5d5d5d;
             border-radius: 4px;
         }
+
+        .rect-button {
+            background-color: #2f4f4f;
+            color: #fff;
+            padding: 10px 30px;
+            text-decoration: none;
+            font-size: 1em;
+        }
+        .rect-button:hover {
+            color: #fff;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -80,7 +95,7 @@
     </div>
 
     <div class="explanatory-text">
-        <p id="explanatory-content1">最近共通テストで使われているDNCLをブラウザで実行してみましょう!</p>
+        <p id="explanatory-content1">最近共通テストで使われているDNCLをブラウザで実行してみましょう! 令和7年度のものを実行できます。</p>
         <a href="https://www.dnc.ac.jp/albums/abm.php?d=511&f=abm00003141.pdf&n=6-1_%E6%A6%82%E8%A6%81%E3%80%8C%E6%83%85%E5%A0%B1%E3%80%8D.pdf" id="explanatory-content2">DNCLの文法はこちら</a>
     </div>
 
@@ -91,7 +106,7 @@
 
         <form method="POST">
             {% csrf_token %}
-            <button type="submit" id="execute-btn">実行</button>
+            <button type="submit" id="execute-btn" class="rect-button">実行</button>
             <textarea id="code-input" name="code" placeholder="ここにDNCLコードを入力してください..."></textarea>
         </form>
     </div>
