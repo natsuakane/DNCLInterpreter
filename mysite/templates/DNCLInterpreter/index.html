@@ -31,7 +31,7 @@
             cursor: pointer;
         }
         #code-input {
-            width: 80%;
+            width: 100%;
             height: 300px;
             padding: 10px;
             font-family: monospace;
@@ -52,15 +52,13 @@
             margin-left: 15px;
             margin-top: -5px;
         }
-        .execute_contents {
+        .execute-contents {
             width: 80%;
             padding: 0px;
-            display: flex; /* フレックスボックスを使用して横並びに */
-            align-items: center; /* 子要素の高さを揃える */
+            margin-top: 20px;
         }
         #execute-btn {
             width: 25%;
-            margin-left: -11px;
             height: 49px; /* 親要素の高さに合わせる */
             padding: 0; /* パディングをリセット */
         }
@@ -85,14 +83,18 @@
         <p id="explanatory-content1">最近共通テストで使われているDNCLをブラウザで実行してみましょう!</p>
         <a href="https://www.dnc.ac.jp/albums/abm.php?d=511&f=abm00003141.pdf&n=6-1_%E6%A6%82%E8%A6%81%E3%80%8C%E6%83%85%E5%A0%B1%E3%80%8D.pdf" id="explanatory-content2">DNCLの文法はこちら</a>
     </div>
-    
-    <div class="execute_contents">
-        <button id="execute-btn">実行</button>
-        <textarea id="result-box" placeholder="結果..." readonly></textarea>
-    </div>
-    
-    <textarea id="code-input" placeholder="ここにDNCLコードを入力してください..."></textarea>
 
-    <!-- JavaScriptは変更なし -->
+    <div class="execute-contents">
+        {% if result %}
+            <textarea id="result-box" readonly>{{ result }}</textarea>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" id="execute-btn">実行</button>
+            <textarea id="code-input" name="code" placeholder="ここにDNCLコードを入力してください..."></textarea>
+        </form>
+    </div>
+
 </body>
 </html>
