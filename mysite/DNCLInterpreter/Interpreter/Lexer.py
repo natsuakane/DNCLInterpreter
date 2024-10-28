@@ -3,13 +3,15 @@ from typing import List, Tuple
 
 # トークンの種類
 TOKEN_SPECIFICATION = [
-    ('NUMBER', r'\d+(\.\d*)?'),       # 整数または浮動小数点数
-    ('ID', r'[A-Za-z_]\w*'),          # 識別子
-    ('OP', r'[+\-*/%=,]'),            # 演算子
-    ('NEWLINE', r'\n'),               # 改行
-    ('SKIP', r'[ \t]+'),              # スペースとタブ
-    ('BLOCK', r'[┃┗]'),               # 条件分岐とループの塊
-    ('OTHERCHARS', r'[^ \t]+'),             # 漢字やひらがななど
+    ('NUMBER', r'[\+|-]?\d+(\.\d*)?'),      # 整数または浮動小数点数
+    ('STRING', r'"(.*)"'),                  # 文字列
+    ('ID', r'[A-Za-z_]\w*'),                # 識別子
+    ('OP', r'\*\*|([+\-*/%=,])'),           # 演算子
+    ('PARENTHESES', r'[()]'),               # かっこ
+    ('NEWLINE', r'\n'),                     # 改行
+    ('SKIP', r'[ \t]+'),                    # スペースとタブ
+    ('BLOCK', r'[┃┗]'),                     # 条件分岐とループの塊
+    ('OTHERCHARS', r'[^ \t()]+'),             # 漢字やひらがななど
 ]
 
 # エラー処理用の例外クラス
@@ -42,12 +44,3 @@ class Lexer:
             if not match:
                 raise LexerError(f"不明なトークン '{self.code[position]}' at line {self.line}")
         return tokens
-
-# テスト
-code = "うんち = 5 + 3\ny = x * 2"
-lexer = Lexer(code)
-try:
-    tokens = lexer.tokenize()
-    print(tokens)  # トークンのリストを表示
-except LexerError as e:
-    print(e)
