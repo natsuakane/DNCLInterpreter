@@ -19,6 +19,11 @@ class Parser:
         elif type == 'STRING':
             return (token_num + 1, Expression('STRING', [content]))
         elif type == 'ID':
+            if self.check_operator(token_num + 1, ["["]):
+                new_token_num, subscript = self.assign(token_num + 2)
+                self.token(new_token_num, "]")
+                return (new_token_num + 1, Expression('ELM', [Expression('VAR', [content]), subscript]))
+            
             return (token_num + 1, Expression('VAR', [content]))
         elif type == 'OTHERCHARS':
             if self.check_operator(token_num + 1, ["("]):
@@ -34,17 +39,32 @@ class Parser:
                     if self.check_operator(new_token_num, [","]):
                         new_token_num += 1
                         continue
-                    raise ParserError("不明なトークンです。{0}".format(self.tokens[new_token_num]))
+                    raise ParserError("不明なトークンです。1{0}".format(self.tokens[new_token_num]))
                 
                 return (new_token_num + 1, Expression('FUNC', [content] + params))
             return (token_num + 1, Expression('VAR', [content]))
+        elif content == "[":
+                params = []
+                new_token_num = token_num + 1
+
+                while not self.check_operator(new_token_num, ["]"]):
+                    new_token_num, expression = self.assign(new_token_num)
+                    params.append(expression)
+
+                    if self.check_operator(new_token_num, ["]"]):
+                        continue
+                    if self.check_operator(new_token_num, [","]):
+                        new_token_num += 1
+                        continue
+                    raise ParserError("不明なトークンです。2{0}".format(self.tokens[new_token_num]))
+                
+                return (new_token_num + 1, Expression('ARRAY', params))
         elif content == "(":
             new_token_num, expression = self.assign(token_num + 1)
-            if self.tokens[new_token_num][1] != ")":
-                raise ParserError("不明なトークンです。{0}".format(self.tokens[new_token_num]))
+            self.token(new_token_num, ")")
             return (new_token_num + 1, expression)
         else:
-            raise ParserError("不明なトークンです。{0}".format(content))
+            raise ParserError("不明なトークンです。3{0}".format(content))
     
     def power(self, token_num: int) -> tuple[int, Expression]:
         new_token_num_left, left = self.factor(token_num)
@@ -121,6 +141,40 @@ class Parser:
             return (new_token_num_right, Expression('OP', ["=", left, right]))
         
         return (new_token_num_left, left)
+    
+    def statement(self, token_num: int) -> tuple[int, Expression]:
+        if self.check_operator(token_num, ["もし"]):
+            block_list = []
+            condition_exps = []
+
+            new_token_num, condition_exp = self.assign(token_num + 1)
+            new_token_num = self.token(new_token_num, "ならば:")
+            new_token_num = self.token(new_token_num, "\n")
+            level = self.count_level(new_token_num)
+            new_token_num, expressions = self.block(new_token_num, level, True)
+
+            condition_exps.append(condition_exp)
+            block_list.append(expressions)
+
+            while self.check_operator(new_token_num, ["そうでなくもし"]):
+                new_token_num, condition_exp = self.assign(new_token_num + 1)
+                new_token_num = self.token(new_token_num, "ならば:")
+                new_token_num = self.token(new_token_num, "\n")
+                new_token_num, expressions = self.block(new_token_num, level, True)
+
+                condition_exps.append(condition_exp)
+                block_list.append(expressions)
+
+            if self.check_operator(new_token_num, ["そうでなければ:"]):
+                new_token_num = self.token(new_token_num + 1, "\n")
+                new_token_num, expressions = self.block(new_token_num, level)
+
+                condition_exps.append(None)
+                block_list.append(expressions)
+
+            return new_token_num, Expression('STMT', ["if", condition_exps, block_list])
+        
+        return self.assign(token_num)
                                                          
     def check_operator(self, token_num: int, operators: list[str]) -> bool:
         if token_num >= len(self.tokens):
@@ -131,3 +185,39 @@ class Parser:
             flag = self.tokens[token_num][1] == operator or flag
             
         return flag
+    
+    def token(self, token_num: int, token: str) -> int:
+        if self.check_operator(token_num, [token]):
+            return token_num + 1
+        raise ParserError("不明なトークンです。4{0}".format(self.tokens[token_num]))
+    
+    def block(self, token_num: int, level: int, iscontinuation: bool = False) -> tuple[int, list[Expression]]:
+        new_token_num = token_num
+        expressions: list[tuple[int, Expression]] = []
+        while True:
+            for l in range(level - 1):
+                new_token_num = self.token(new_token_num, "┃")
+
+            if(self.check_operator(new_token_num, ["┗"])):
+                new_token_num = self.token(new_token_num, "┗")
+                new_token_num, exp = self.assign(new_token_num)
+                expressions.append(exp)
+                return (new_token_num, expressions)
+            
+            try:
+                new_token_num = self.token(new_token_num, "┃")
+                new_token_num, stmt = self.statement(new_token_num)
+                new_token_num = self.token(new_token_num, '\n')
+                expressions.append(stmt)
+            except Exception as e:
+                if iscontinuation:
+                    return new_token_num, expressions
+                raise ParserError("文の終わりが見つかりません。")
+            
+    def count_level(self, token_num: int) -> int:
+        level = 0
+        while self.tokens[token_num + level][1] == '┃':
+            level += 1
+        if level == 0:
+            raise ParserError("ブロックが見つかりません。")
+        return level

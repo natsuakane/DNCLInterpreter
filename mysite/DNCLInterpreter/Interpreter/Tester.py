@@ -1,7 +1,15 @@
 from Lexer import *
 from MyParser import *
 
-code = 'x = 表示する(1 * 2, 2)'
+code = """もし 1 == 1 ならば:
+┃ 表示する("aaa")
+┃ 1 + 2
+そうでなくもし 1 > 1 ならば:
+┃ 1 + 3
+┃ 1 + 4
+そうでなければ:
+┗ 1 + 5
+"""
 lexer = Lexer(code)
 try:
     tokens = lexer.tokenize()
@@ -11,8 +19,8 @@ except LexerError as e:
 
 parser = Parser(tokens)
 try:
-    expressions = parser.assign(0)
-    print(expressions[1].print())
+    i, statement = parser.statement(0)
+    print(statement.print())
 except ParserError as e:
     print(e)
 

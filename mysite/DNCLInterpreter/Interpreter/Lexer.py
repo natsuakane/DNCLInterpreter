@@ -6,12 +6,13 @@ TOKEN_SPECIFICATION = [
     ('NUMBER', r'[\+|-]?\d+(\.\d*)?'),      # 整数または浮動小数点数
     ('STRING', r'"(.*)"'),                  # 文字列
     ('ID', r'[A-Za-z_]\w*'),                # 識別子
-    ('OP', r'\*\*|([+\-*/%=,])'),           # 演算子
+    ('OP', r'\*\*|==|!=|<=|>=|([+\-*/%=,<>])'),           # 演算子
     ('PARENTHESES', r'[()]'),               # かっこ
+    ('BRACKETS', r'[\[\]]'),                # 鉤括弧
     ('NEWLINE', r'\n'),                     # 改行
     ('SKIP', r'[ \t]+'),                    # スペースとタブ
     ('BLOCK', r'[┃┗]'),                     # 条件分岐とループの塊
-    ('OTHERCHARS', r'[^ \t()]+'),             # 漢字やひらがななど
+    ('OTHERCHARS', r'[^ \t()\n]+'),           # 漢字やひらがななど
 ]
 
 # エラー処理用の例外クラス
@@ -37,7 +38,7 @@ class Lexer:
                     token_value = match.group(0)
                     if regex_type == 'NEWLINE':
                         self.line += 1  # 改行で行数をインクリメント
-                    elif regex_type != 'SKIP':  # スキップ以外はトークンに追加
+                    if regex_type != 'SKIP':  # スキップ以外はトークンに追加
                         tokens.append((regex_type, token_value))
                     position = match.end(0)
                     break
