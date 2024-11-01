@@ -9,7 +9,7 @@ TOKEN_SPECIFICATION = [
     ('OP', r'\*\*|==|!=|<=|>=|([+\-*/%=,<>])'),           # 演算子
     ('PARENTHESES', r'[()]'),               # かっこ
     ('BRACKETS', r'[\[\]]'),                # 鉤括弧
-    ('NEWLINE', r'\n'),                     # 改行
+    ('NEWLINE', r'\r\n|[\r\n]'),            # 改行
     ('SKIP', r'[ \t]+'),                    # スペースとタブ
     ('BLOCK', r'[┃┗]'),                     # 条件分岐とループの塊
     ('OTHERCHARS', r'[^ \t()\n]+'),         # 漢字やひらがななど

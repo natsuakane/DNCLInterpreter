@@ -1,4 +1,4 @@
-from Expression import Expression
+from .Expression import Expression
 
 # エラー処理用の例外クラス
 class ParserError(Exception):
@@ -152,7 +152,7 @@ class Parser:
 
             new_token_num, condition_exp = self.assign(token_num + 1)
             new_token_num = self.token(new_token_num, "ならば:")
-            new_token_num = self.token(new_token_num, "\n")
+            new_token_num = self.token(new_token_num, "\r\n")
             level = self.count_level(new_token_num)
             new_token_num, expressions = self.block(new_token_num, level, True)
 
@@ -162,14 +162,14 @@ class Parser:
             while self.check_operator(new_token_num, ["そうでなくもし"]):
                 new_token_num, condition_exp = self.assign(new_token_num + 1)
                 new_token_num = self.token(new_token_num, "ならば:")
-                new_token_num = self.token(new_token_num, "\n")
+                new_token_num = self.token(new_token_num, "\r\n")
                 new_token_num, expressions = self.block(new_token_num, level, True)
 
                 condition_exps.append(condition_exp)
                 block_list.append(expressions)
 
             if self.check_operator(new_token_num, ["そうでなければ:"]):
-                new_token_num = self.token(new_token_num + 1, "\n")
+                new_token_num = self.token(new_token_num + 1, "\r\n")
                 new_token_num, expressions = self.block(new_token_num, level)
 
                 condition_exps.append(None)
@@ -188,14 +188,14 @@ class Parser:
 
             if self.check_operator(new_token_num, ["ずつ増やしながら繰り返す:"]):
                 new_token_num = self.token(new_token_num, "ずつ増やしながら繰り返す:")
-                new_token_num = self.token(new_token_num, "\n")
+                new_token_num = self.token(new_token_num, "\r\n")
                 level = self.count_level(new_token_num)
                 new_token_num, block = self.block(new_token_num, level)
 
                 return new_token_num, Expression('STMT', ["forup", var, start_value, stop_value, step_value, block])
             elif self.check_operator(new_token_num, ["ずつ減らしながら繰り返す:"]):
                 new_token_num = self.token(new_token_num, "ずつ減らしながら繰り返す:")
-                new_token_num = self.token(new_token_num, "\n")
+                new_token_num = self.token(new_token_num, "\r\n")
                 level = self.count_level(new_token_num)
                 new_token_num, block = self.block(new_token_num, level)
 
@@ -206,7 +206,7 @@ class Parser:
         new_token_num, expression = self.assign(token_num)
         if self.check_operator(new_token_num, ["の間繰り返す:"]):
             new_token_num = self.token(new_token_num, "の間繰り返す:")
-            new_token_num = self.token(new_token_num, "\n")
+            new_token_num = self.token(new_token_num, "\r\n")
             level = self.count_level(new_token_num)
             new_token_num, block = self.block(new_token_num, level)
 
@@ -222,8 +222,8 @@ class Parser:
             stmts.append(stmt)
             if self.check_operator(new_token_num, [","]):
                 new_token_num = self.token(new_token_num, ",")
-            while self.check_operator(new_token_num, ["\n"]):
-                new_token_num = self.token(new_token_num, "\n")
+            while self.check_operator(new_token_num, ["\r\n"]):
+                new_token_num = self.token(new_token_num, "\r\n")
         
         return 0, Expression('PROGRAM', [stmts])
                                                          
