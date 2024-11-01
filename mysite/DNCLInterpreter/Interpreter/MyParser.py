@@ -26,6 +26,9 @@ class Parser:
             
             return (token_num + 1, Expression('VAR', [content]))
         elif type == 'OTHERCHARS':
+            if content == "【外部からの入力】":
+                return (token_num + 1, Expression('INPUT', []))
+
             if self.check_operator(token_num + 1, ["("]):
                 params = []
                 new_token_num = token_num + 2
@@ -174,7 +177,42 @@ class Parser:
 
             return new_token_num, Expression('STMT', ["if", condition_exps, block_list])
         
-        return self.assign(token_num)
+        elif self.check_operator(token_num + 1, ["を"]):
+            var = Expression('VAR', [self.tokens[token_num][1]])
+            new_token_num = self.token(token_num + 1, "を")
+            new_token_num, start_value = self.assign(new_token_num)
+            new_token_num = self.token(new_token_num, "から")
+            new_token_num, stop_value = self.assign(new_token_num)
+            new_token_num = self.token(new_token_num, "まで")
+            new_token_num, step_value = self.assign(new_token_num)
+
+            if self.check_operator(new_token_num, ["ずつ増やしながら繰り返す:"]):
+                new_token_num = self.token(new_token_num, "ずつ増やしながら繰り返す:")
+                new_token_num = self.token(new_token_num, "\n")
+                level = self.count_level(new_token_num)
+                new_token_num, block = self.block(new_token_num, level)
+
+                return new_token_num, Expression('STMT', ["forup", var, start_value, stop_value, step_value, block])
+            elif self.check_operator(new_token_num, ["ずつ減らしながら繰り返す:"]):
+                new_token_num = self.token(new_token_num, "ずつ減らしながら繰り返す:")
+                new_token_num = self.token(new_token_num, "\n")
+                level = self.count_level(new_token_num)
+                new_token_num, block = self.block(new_token_num, level)
+
+                return new_token_num, Expression('STMT', ["fordown", var, start_value, stop_value, step_value, block])
+            else:
+                raise ParserError("for文が適切に終わっていません。")
+            
+        new_token_num, expression = self.assign(token_num)
+        if self.check_operator(new_token_num, ["の間繰り返す:"]):
+            new_token_num = self.token(new_token_num, "の間繰り返す:")
+            new_token_num = self.token(new_token_num, "\n")
+            level = self.count_level(new_token_num)
+            new_token_num, block = self.block(new_token_num, level)
+
+            return new_token_num, Expression('STMT', ["while", expression, block])
+
+        return new_token_num, expression
                                                          
     def check_operator(self, token_num: int, operators: list[str]) -> bool:
         if token_num >= len(self.tokens):
@@ -189,7 +227,7 @@ class Parser:
     def token(self, token_num: int, token: str) -> int:
         if self.check_operator(token_num, [token]):
             return token_num + 1
-        raise ParserError("不明なトークンです。4{0}".format(self.tokens[token_num]))
+        raise ParserError("不明なトークンです。{0}\n正しいトークンは {1}。".format(self.tokens[token_num], token))
     
     def block(self, token_num: int, level: int, iscontinuation: bool = False) -> tuple[int, list[Expression]]:
         new_token_num = token_num
@@ -209,7 +247,7 @@ class Parser:
                 new_token_num, stmt = self.statement(new_token_num)
                 new_token_num = self.token(new_token_num, '\n')
                 expressions.append(stmt)
-            except Exception as e:
+            except ParserError as e:
                 if iscontinuation:
                     return new_token_num, expressions
                 raise ParserError("文の終わりが見つかりません。")

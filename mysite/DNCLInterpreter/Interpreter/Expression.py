@@ -22,6 +22,8 @@ class Expression:
                 s += ", child{0}:{1}".format(i, param.print())
             s += ")"
             return s
+        elif self.type == 'INPUT':
+            return "[input]"
         elif self.type == 'ARRAY':
             s = "["
             for i, param in enumerate(self.children):
@@ -47,5 +49,34 @@ class Expression:
                     for j, expression in enumerate(self.children[2][i]):
                         s += ", exp{0}:{1}".format(j, expression.print())
                     s += ")"
+                s += ")"
+                return s
+            
+            elif self.children[0] == "forup":
+                var = self.children[1]
+                start_value = self.children[2]
+                stop_value = self.children[3]
+                step_value = self.children[4]
+                s = "(stmt:forup, var:{0}, start:{1}, stop:{2}, step:{3}".format(var.print(), start_value.print(), stop_value.print(), step_value.print())
+                for i, expression in enumerate(self.children[5]):
+                    s += ", exp{0}:{1}".format(i, expression.print())
+                s += ")"
+                return s
+            
+            elif self.children[0] == "fordown":
+                var = self.children[1]
+                start_value = self.children[2]
+                stop_value = self.children[3]
+                step_value = self.children[4]
+                s = "(stmt:fordown, var:{0}, start:{1}, stop:{2}, step:{3}".format(var.print(), start_value.print(), stop_value.print(), step_value.print())
+                for i, expression in enumerate(self.children[5]):
+                    s += ", exp{0}:{1}".format(i, expression.print())
+                s += ")"
+                return s
+            
+            elif self.children[0] == "while":
+                s = "(stmlt:while, con:{0}".format(self.children[1].print())
+                for i, expression in enumerate(self.children[2]):
+                    s += ", exp{0}:{1}".format(i, expression.print())
                 s += ")"
                 return s

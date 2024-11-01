@@ -1,14 +1,9 @@
 from Lexer import *
 from MyParser import *
 
-code = """もし 1 == 1 ならば:
-┃ 表示する("aaa")
-┃ 1 + 2
-そうでなくもし 1 > 1 ならば:
-┃ 1 + 3
-┃ 1 + 4
-そうでなければ:
-┗ 1 + 5
+code = """x > 1 の間繰り返す:
+┃ x = 【外部からの入力】
+┗ 2 + 3
 """
 lexer = Lexer(code)
 try:
