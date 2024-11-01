@@ -12,7 +12,7 @@ TOKEN_SPECIFICATION = [
     ('NEWLINE', r'\n'),                     # 改行
     ('SKIP', r'[ \t]+'),                    # スペースとタブ
     ('BLOCK', r'[┃┗]'),                     # 条件分岐とループの塊
-    ('OTHERCHARS', r'[^ \t()\n]+'),           # 漢字やひらがななど
+    ('OTHERCHARS', r'[^ \t()\n]+'),         # 漢字やひらがななど
 ]
 
 # エラー処理用の例外クラス
@@ -44,4 +44,5 @@ class Lexer:
                     break
             if not match:
                 raise LexerError(f"不明なトークン '{self.code[position]}' at line {self.line}")
+        tokens.append(('EOF', ""))
         return tokens

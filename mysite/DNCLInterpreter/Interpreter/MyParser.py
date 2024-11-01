@@ -213,6 +213,19 @@ class Parser:
             return new_token_num, Expression('STMT', ["while", expression, block])
 
         return new_token_num, expression
+    
+    def program(self, token_num: int) -> tuple[int, Expression]:
+        new_token_num = token_num
+        stmts = []
+        while self.tokens[new_token_num][0] != 'EOF':
+            new_token_num, stmt = self.statement(new_token_num)
+            stmts.append(stmt)
+            if self.check_operator(new_token_num, [","]):
+                new_token_num = self.token(new_token_num, ",")
+            while self.check_operator(new_token_num, ["\n"]):
+                new_token_num = self.token(new_token_num, "\n")
+        
+        return 0, Expression('PROGRAM', [stmts])
                                                          
     def check_operator(self, token_num: int, operators: list[str]) -> bool:
         if token_num >= len(self.tokens):

@@ -4,6 +4,8 @@ from MyParser import *
 code = """x > 1 の間繰り返す:
 ┃ x = 【外部からの入力】
 ┗ 2 + 3
+1 + 5, 2 + 3
+3 + 3, 表示する(x)
 """
 lexer = Lexer(code)
 try:
@@ -14,7 +16,7 @@ except LexerError as e:
 
 parser = Parser(tokens)
 try:
-    i, statement = parser.statement(0)
+    i, statement = parser.program(0)
     print(statement.print())
 except ParserError as e:
     print(e)
