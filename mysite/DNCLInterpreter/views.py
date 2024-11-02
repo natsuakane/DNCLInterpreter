@@ -10,19 +10,21 @@ class IndexView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         code_text = request.POST.get('code', '')
-        if code_text:
-            result = ""
-            Code.objects.create(code=code_text)
+        input_data = request.POST.get('input', '')
+        if code_text and input_data:
+            Code.objects.create(code=code_text, input_d=input_data)
             
+            result = ""
             code = code_text
             lexer = Lexer(code)
             try:
                 tokens = lexer.tokenize()
             except LexerError as e:
-                result += e
+                result += str(e)
 
             parser = Parser(tokens)
             try:
+                IOProcess.input(input_data)
                 _, program = parser.program(0)
                 # result += program.print()
                 program.evaluate()
@@ -30,7 +32,7 @@ class IndexView(TemplateView):
                 for o in IOProcess.get_output():
                     result += "{0}\r\n".format(o)
             except ParserError as e:
-                result += e
+                result += str(e)
 
-            return render(request, self.template_name, {'result': result, 'code': code_text})
+            return render(request, self.template_name, {'result': result, 'code': code_text, 'input': input_data})
         return render(request, self.template_name, {'code': code_text})

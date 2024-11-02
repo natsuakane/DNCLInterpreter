@@ -51,10 +51,21 @@
             padding: 0px;
             margin-top: 20px;
         }
+        .execute-data {
+            width: 100%;
+            display: flex;
+        }
         #execute-btn {
             width: 25%;
             height: 49px; /* 親要素の高さに合わせる */
             border-width: 0px;
+        }
+        #input-data {
+            width: 74%;
+            height: 41px;
+            margin-top: 20px;
+            margin-left: 20px;
+            resize: none;
         }
         #code-input {
             width: 100%;
@@ -107,8 +118,11 @@
 
         <form method="POST">
             {% csrf_token %}
-            <button type="submit" id="execute-btn" class="rect-button">実行</button>
-            <textarea id="code-input" name="code" placeholder="ここにDNCLコードを入力してください...">{{ code }}</textarea>
+            <div class="execute-data">
+                <button type="submit" id="execute-btn" class="rect-button">実行</button>
+                <textarea id="input-data" name="input" placeholder="inputする内容を入れてください... 複数入力するときは改行してね">{{ input }}</textarea>
+            </div>
+            <textarea id="code-input" name="code" placeholder="ここにプログラムを入力してください...">{{ code }}</textarea>
         </form>
     </div>
 

@@ -21,14 +21,28 @@ class Environment:
 # 入出力管理用のクラス
 class IOProcess:
     __output: list[str] = []
+    __input: list[any] = []
+    __index: int = 0
     
+    @staticmethod
+    def input(s: str):
+        def try_convert_to_float(value):
+            try:
+                return float(value)
+            except ValueError:
+                return value
+        IOProcess.__input = s.split("\r\n")
+        IOProcess.__input = list(map(try_convert_to_float, IOProcess.__input))
+        IOProcess.__index = 0
+
     @staticmethod
     def output(s: str):
         IOProcess.__output.append(s)
 
     @staticmethod
-    def input() -> str:
-        pass
+    def get_input() -> any:
+        IOProcess.__index += 1
+        return IOProcess.__input[IOProcess.__index - 1]
 
     @staticmethod
     def get_output():
@@ -58,7 +72,8 @@ class Expression:
                 s = "".join(map(lambda c : str(c.evaluate()), self.children[1:]))
                 IOProcess.output(s)
         elif self.type == 'INPUT':
-            return IOProcess.input()
+            print('INPUT')
+            return IOProcess.get_input()
         elif self.type == 'ARRAY':
             contents = []
             for content in self.children:
@@ -76,7 +91,11 @@ class Expression:
             elif self.children[0] == "%":
                 return self.children[1].evaluate() % self.children[2].evaluate()
             elif self.children[0] == "+":
-                return self.children[1].evaluate() + self.children[2].evaluate()
+                child1 = self.children[1].evaluate()
+                child2 = self.children[2].evaluate()
+                if type(child1) == str or type(child2) == str:
+                    return str(child1) + str(child2)
+                return child1 + child2
             elif self.children[0] == "-":
                 return self.children[1].evaluate() - self.children[2].evaluate()
             elif self.children[0] == "==":
