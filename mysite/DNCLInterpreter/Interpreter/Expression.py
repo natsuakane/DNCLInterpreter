@@ -1,13 +1,118 @@
+import math
+import random
+
 # エラー処理用の例外クラス
 class ExpressionError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+# 変数管理用のクラス
+class Environment:
+    __variables: dict[str, any] = []
+    
+    @staticmethod
+    def get(var: str):
+        return Environment.__variables[var]
+    
+    @staticmethod
+    def set(var: str, val: any):
+        Environment.__variables[var] = val
+
+# 入出力管理用のクラス
+class IOProcess:
+    __output: list[str] = []
+    
+    @staticmethod
+    def output(s: str):
+        IOProcess.__output.append(s)
+
+    @staticmethod
+    def input() -> str:
+        pass
 
 # Expression クラス
 class Expression:
     def __init__(self, type: str, children: list):
         self.type = type
         self.children = children
+
+    def evaluate(self):
+        if self.type == 'NUMBER':
+            return self.children[0]
+        elif self.type == 'STRING':
+            return self.children[0]
+        elif self.type == 'VAR':
+            return Environment.get(self.children[0])
+        elif self.type == 'FUNC':
+            if self.children[0] == "要素数":
+                return len(self.children[1].evaluate())
+            elif self.children[0] == "整数":
+                return round(self.children[1].evaluate())
+            elif self.children[0] == "乱数":
+                return random.random()
+            elif self.children[0] == "表示する":
+                IOProcess.output(self.children[1].evaluate())
+        elif self.type == 'INPUT':
+            return IOProcess.input()
+        elif self.type == 'ARRAY':
+            contents = []
+            for content in self.children[0]:
+                contents.append(content.evaluate())
+            return contents
+        elif self.type == 'ELM':
+            return (self.children[0].evaluate())[self.children[1].evaluate()]
+        elif self.type == 'OP':
+            if self.children[0] == "**":
+                return math.pow(self.children[1].evaluate(), self.children[2].evaluate())
+            elif self.children[0] == "*":
+                return self.children[1].evaluate() * self.children[2].evaluate()
+            elif self.children[0] == "/":
+                return self.children[1].evaluate() / self.children[2].evaluate()
+            elif self.children[0] == "%":
+                return self.children[1].evaluate() % self.children[2].evaluate()
+            elif self.children[0] == "+":
+                return self.children[1].evaluate() + self.children[2].evaluate()
+            elif self.children[0] == "-":
+                return self.children[1].evaluate() - self.children[2].evaluate()
+            elif self.children[0] == "==":
+                return self.children[1].evaluate() == self.children[2].evaluate()
+            elif self.children[0] == "!=":
+                return self.children[1].evaluate() != self.children[2].evaluate()
+            elif self.children[0] == "<":
+                return self.children[1].evaluate() < self.children[2].evaluate()
+            elif self.children[0] == ">":
+                return self.children[1].evaluate() > self.children[2].evaluate()
+            elif self.children[0] == "<=":
+                return self.children[1].evaluate() <= self.children[2].evaluate()
+            elif self.children[0] == ">=":
+                return self.children[1].evaluate() >= self.children[2].evaluate()
+            elif self.children[0] == "not":
+                if self.children[1].evaluate() == 0:
+                    return 1
+                else:
+                    return 0
+            elif self.children[0] == "and":
+                if self.children[1].evaluate() == 0 or self.children[2].evaluate() == 0:
+                    return 0
+                else:
+                    return 1
+            elif self.children[0] == "or":
+                if self.children[1].evaluate() == 0 and self.children[2].evaluate() == 0:
+                    return 0
+                else:
+                    return 1
+            elif self.children[0] == "=":
+                if self.children[1][0] != 'VAR':
+                    raise ExpressionError("=の左辺が変数ではありません")
+                Environment.set(self.children[1].children[0], self.children[2].evaluate())
+                return self.children[2].evaluate()
+        elif self.type == 'STMT':
+            pass
+
+        elif self.type == 'PROGRAM':
+            for stmt in self.children[0]:
+                stmt.evaluate()
+            return 0
     
     def print(self) -> str:
         if self.type == 'NUMBER':
