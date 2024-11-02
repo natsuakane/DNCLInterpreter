@@ -8,7 +8,7 @@ class ExpressionError(Exception):
 
 # 変数管理用のクラス
 class Environment:
-    __variables: dict[str, any] = []
+    __variables: dict[str, any] = {}
     
     @staticmethod
     def get(var: str):
@@ -29,6 +29,10 @@ class IOProcess:
     @staticmethod
     def input() -> str:
         pass
+
+    @staticmethod
+    def get_output():
+        return IOProcess.__output
 
 # Expression クラス
 class Expression:
@@ -51,12 +55,13 @@ class Expression:
             elif self.children[0] == "乱数":
                 return random.random()
             elif self.children[0] == "表示する":
-                IOProcess.output(self.children[1].evaluate())
+                s = "".join(map(lambda c : str(c.evaluate()), self.children[1:]))
+                IOProcess.output(s)
         elif self.type == 'INPUT':
             return IOProcess.input()
         elif self.type == 'ARRAY':
             contents = []
-            for content in self.children[0]:
+            for content in self.children:
                 contents.append(content.evaluate())
             return contents
         elif self.type == 'ELM':
@@ -102,12 +107,69 @@ class Expression:
                 else:
                     return 1
             elif self.children[0] == "=":
-                if self.children[1][0] != 'VAR':
+                if self.children[1].type != 'VAR':
                     raise ExpressionError("=の左辺が変数ではありません")
                 Environment.set(self.children[1].children[0], self.children[2].evaluate())
                 return self.children[2].evaluate()
+            
         elif self.type == 'STMT':
-            pass
+            if self.children[0] == "if":
+                for i, block in enumerate(self.children[1]):
+                    if not (self.children[1][i] is None or self.children[1][i].evaluate() == 0):
+                        for j, expression in enumerate(self.children[2][i]):
+                            expression.evaluate()
+                        return None
+                    elif self.children[1][i] is None:
+                        for j, expression in enumerate(self.children[2][i]):
+                            expression.evaluate()
+                        return None
+                return None
+            
+            elif self.children[0] == "forup":
+                var = self.children[1]
+                start_value = self.children[2]
+                stop_value = self.children[3]
+                step_value = self.children[4]
+                block = self.children[5]
+                for i in range(start_value.evaluate(), stop_value.evaluate() + 1, step_value.evaluate()):
+                    if var.type != 'VAR':
+                        raise ExpressionError("変数が指定されていません。")
+                    Environment.set(var.children[0], i)
+                    for stmt in block:
+                        stmt.evaluate()
+                return None
+            
+            elif self.children[0] == "fordown":
+                var = self.children[1]
+                start_value = self.children[2]
+                stop_value = self.children[3]
+                step_value = self.children[4]
+                block = self.children[5]
+                for i in range(start_value.evaluate(), stop_value.evaluate() - 1, -step_value.evaluate()):
+                    if var.type != 'VAR':
+                        raise ExpressionError("変数が指定されていません。")
+                    Environment.set(var.children[0], i)
+                    for stmt in block:
+                        stmt.evaluate()
+                return None
+            
+            elif self.children[0] == "while":
+                con = self.children[1]
+                block = self.children[2]
+                while con.evaluate() != 0:
+                    for stmt in block:
+                        stmt.evaluate()
+                return None
+            
+            elif self.children[0] == "resetarray":
+                array_name = self.children[1]
+                val = self.children[2]
+                if array_name.type != 'VAR':
+                    raise ExpressionError("変数が指定されていません。")
+                array = Environment.get(array_name.children[0])
+                array = list(map(lambda x : val.evaluate(), array))
+                Environment.set(array_name.children[0], array)
+                return None
 
         elif self.type == 'PROGRAM':
             for stmt in self.children[0]:

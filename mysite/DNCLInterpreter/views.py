@@ -18,14 +18,17 @@ class IndexView(TemplateView):
             lexer = Lexer(code)
             try:
                 tokens = lexer.tokenize()
-                # result += str(tokens)
             except LexerError as e:
                 result += e
 
             parser = Parser(tokens)
             try:
-                _, statement = parser.program(0)
-                result += statement.print()
+                _, program = parser.program(0)
+                # result += program.print()
+                program.evaluate()
+                result += "正常に実行されました\r\n"
+                for o in IOProcess.get_output():
+                    result += "{0}\r\n".format(o)
             except ParserError as e:
                 result += e
 

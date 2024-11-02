@@ -12,7 +12,7 @@ TOKEN_SPECIFICATION = [
     ('NEWLINE', r'\r\n|[\r\n]'),                # 改行
     ('SKIP', r'[ \t]+'),                        # スペースとタブ
     ('BLOCK', r'[┃┗]'),                         # 条件分岐とループの塊
-    ('OTHERCHARS', r'[^ \t()\n]+'),             # 漢字やひらがななど
+    ('OTHERCHARS', r'[\u3040-\u30FF\u4E00-\u9FFF:【】]+'),           # 漢字やひらがななど
 ]
 
 # エラー処理用の例外クラス

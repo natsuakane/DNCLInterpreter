@@ -211,6 +211,12 @@ class Parser:
             new_token_num, block = self.block(new_token_num, level)
 
             return new_token_num, Expression('STMT', ["while", expression, block])
+        elif self.check_operator(new_token_num, ["のすべての値を"]):
+            new_token_num = self.token(new_token_num, "のすべての値を")
+            new_token_num, val = self.assign(new_token_num)
+            new_token_num = self.token(new_token_num, "にする")
+
+            return new_token_num, Expression('STMT', ["resetarray", expression, val])
 
         return new_token_num, expression
     
@@ -258,7 +264,7 @@ class Parser:
             try:
                 new_token_num = self.token(new_token_num, "┃")
                 new_token_num, stmt = self.statement(new_token_num)
-                new_token_num = self.token(new_token_num, '\n')
+                new_token_num = self.token(new_token_num, "\r\n")
                 expressions.append(stmt)
             except ParserError as e:
                 if iscontinuation:
@@ -267,7 +273,7 @@ class Parser:
             
     def count_level(self, token_num: int) -> int:
         level = 0
-        while self.tokens[token_num + level][1] == '┃':
+        while self.check_operator(token_num + level, ["┃", "┗"]):
             level += 1
         if level == 0:
             raise ParserError("ブロックが見つかりません。")
