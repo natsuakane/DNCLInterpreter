@@ -24,9 +24,9 @@ class IndexView(TemplateView):
 
             parser = Parser(tokens)
             try:
+                IOProcess.init()
                 IOProcess.input(input_data)
                 _, program = parser.program(0)
-                # result += program.print()
                 program.evaluate()
                 result += "正常に実行されました\r\n"
                 for o in IOProcess.get_output():

@@ -23,6 +23,11 @@ class IOProcess:
     __output: list[str] = []
     __input: list[any] = []
     __index: int = 0
+
+    @staticmethod
+    def init():
+        IOProcess.__output.clear()
+        IOProcess.__input.clear()
     
     @staticmethod
     def input(s: str):
