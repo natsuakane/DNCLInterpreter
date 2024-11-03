@@ -5,8 +5,7 @@
 このページを参考にしてください
 
 ## 見た目
-![mitame](<../../D<img width="1470" alt="スクリーンショット 2024-11-03 19 53 51" src="https://github.com/user-attachments/assets/46ca5752-e8af-482b-ae0c-0d13855f28ed">
-esktop/スクリーンショット 2024-11-03 19.53.51.png>)
+<img width="1470" alt="スクリーンショット 2024-11-03 19 53 51" src="https://github.com/user-attachments/assets/46ca5752-e8af-482b-ae0c-0d13855f28ed">
 
 ## 注意
 - 「表示する」関数を使っても表示されないときはinputする内容を入れるテキストエリアに文字を入れて実行してみてください。
