@@ -1,4 +1,4 @@
-# 共通テスト用プログラム表記のインタプリタを作りました
+# 共通テスト用プログラム表記のインタプリタ
 ## URL
 https://natsuakane.pythonanywhere.com/DNCLInterpreter/
 
