@@ -14,4 +14,4 @@ pythonanywhereを使いました。
 
 ## 注意
 - 「表示する」関数を使っても表示されないときはinputする内容を入れるテキストエリアに文字を入れて実行してみてください。
-- 詳しいことは(このページ)[https://qiita.com/natsuakane/items/a881dddc7e9f3f7c77c8]に書きました。
+- 詳しいことは[このページ](https://qiita.com/natsuakane/items/a881dddc7e9f3f7c77c8)に書きました。
